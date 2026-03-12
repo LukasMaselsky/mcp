@@ -125,7 +125,7 @@ def _run_subprocess_safely(
     base_cmd = os.path.basename(cmd[0]) if cmd else ''
 
     # Remove .exe extension for Windows compatibility
-    if base_cmd.endswith('.exe'):
+    if base_cmd.lower().endswith('.exe'):
         base_cmd = base_cmd[:-4]
 
     if base_cmd not in allowed_commands:
@@ -134,7 +134,7 @@ def _run_subprocess_safely(
 
     try:
         return subprocess.run(
-            cmd, check=True, timeout=timeout, capture_output=True, text=True, **kwargs
+            cmd, stdin=subprocess.DEVNULL, check=True, timeout=timeout, capture_output=True, text=True, **kwargs
         )
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as e:
         logger.debug(f'Subprocess failed: {cmd[0]} - {e}')
@@ -733,7 +733,7 @@ def _validate_java_executable(java_path: str) -> None:
         ValueError: If path is not a valid Java executable
     """
     base_cmd = os.path.basename(java_path)
-    if base_cmd.endswith('.exe'):
+    if base_cmd.lower().endswith('.exe'):
         base_cmd = base_cmd[:-4]
     if base_cmd != 'java':
         raise ValueError(f'Invalid Java executable: {base_cmd}')
